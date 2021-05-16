@@ -3,11 +3,27 @@ from flask import Flask, render_template, request, redirect, flash, session\
 
 app = Flask(__name__)
 app.secret_key = "VitorNilson"
-class Jogo():
+
+#Atributos não foram privados para agilizar o desenvolvimento
+class Jogo:
     def __init__(self, nome, categoria, console):
         self.nome = nome
         self.categoria = categoria
         self.console = console
+
+#Atributos não foram privados para agilizar o desenvolvimento
+class Usuario:
+    def __init__(self, id, nome, senha):
+        self.id = id
+        self.nome = nome
+        self.senha = senha
+
+
+usuario1 = Usuario("vitor", "Vitor Nilson", "1234")
+usuario2 = Usuario("roberto", "Roberto Carlos", "emocoes")
+
+lista_usuarios = {usuario1.id: usuario1, usuario2.id: usuario2}
+
 
 jogo1 = Jogo('Super Mario', 'Ação', 'Nes 64')
 jogo2 = Jogo('Crash Bandicoot', 'Aventura', 'Playstation 1')
@@ -40,11 +56,13 @@ def login():
 
 @app.route('/autenticar', methods=['POST',])
 def autenticar():
-    if 'teste' == request.form['senha']:
-        session['usuario_logado'] = request.form['usuario']
-        flash(request.form['usuario'] + ', logado com sucesso!')
-        proxima_pagina = request.form['proxima']
-        return redirect(proxima_pagina)
+
+    if request.form['usuario'] in lista_usuarios:
+        if lista_usuarios[request.form['usuario']].senha == request.form['senha']:
+            session['usuario_logado'] = request.form['usuario']
+            flash(lista_usuarios[request.form['usuario']].nome + ', logado com sucesso!')
+            proxima_pagina = request.form['proxima']
+            return redirect(proxima_pagina)
     else:
         flash('Dados incorretos, tente novamente!')
         return redirect(url_for('login'))
